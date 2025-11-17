@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GenTaxAI - Your Indian Tax Assistant</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --primary: #4F46E5;
+      --primary-dark: #4338CA;
+      --primary-light: #818CF8;
+      --bg: #F9FAFB;
+      --card: #FFFFFF;
+      --text: #111827;
+      --text-muted: #6B7280;
+      --border: #E5E7EB;
+      --success: #10B981;
+      --error: #EF4444;
+      --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 24px;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 20px;
+      height: fit-content;
+    }
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 20px;
+    }
+
+    .logo-text h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .logo-text p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .quick-examples {
+      margin-bottom: 24px;
+    }
+
+    .quick-examples h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    .example-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 8px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--card);
+      color: var(--text);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+    }
+
+    .example-btn:hover {
+      border-color: var(--primary);
+      background: #F5F3FF;
+      transform: translateX(4px);
+    }
+
+    .example-btn i {
+      color: var(--primary);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 10px 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--card);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn:hover {
+      background: var(--bg);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    /* Main Chat Area */
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .chat-header {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 20px 24px;
+      box-shadow: var(--shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .chat-header h2 {
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .messages-wrapper {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      min-height: 500px;
+      max-height: calc(100vh - 320px);
+      overflow-y: auto;
+    }
+
+    .welcome-card {
+      text-align: center;
+      padding: 48px 24px;
+    }
+
+    .welcome-card .icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+
+    .welcome-card h3 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .welcome-card p {
+      color: var(--text-muted);
+      font-size: 15px;
+      max-width: 500px;
+      margin: 0 auto 24px;
+    }
+
+    .message {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message.user {
+      flex-direction: row-reverse;
+    }
+
+    .message-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .message.user .message-avatar {
+      background: linear-gradient(135deg, #10B981, #059669);
+    }
+
+    .message-content {
+      flex: 1;
+      max-width: 75%;
+    }
+
+    .message-bubble {
+      background: var(--bg);
+      padding: 14px 18px;
+      border-radius: 12px;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .message.user .message-bubble {
+      background: var(--primary);
+      color: white;
+    }
+
+    .message-time {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      padding-left: 4px;
+    }
+
+    /* Input Area */
+    .input-area {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .input-wrapper {
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+    }
+
+    .input-container {
+      flex: 1;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 56px;
+      max-height: 120px;
+      padding: 14px 16px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 15px;
+      resize: none;
+      transition: all 0.2s;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .char-count {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 6px;
+      text-align: right;
+    }
+
+    .send-btn {
+      padding: 14px 24px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .send-btn:hover:not(:disabled) {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .send-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Loading State */
+    .loading {
+      display: flex;
+      gap: 4px;
+      padding: 14px 18px;
+    }
+
+    .loading-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--text-muted);
+      border-radius: 50%;
+      animation: bounce 1.4s infinite ease-in-out;
+    }
+
+    .loading-dot:nth-child(1) { animation-delay: -0.32s; }
+    .loading-dot:nth-child(2) { animation-delay: -0.16s; }
+
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0); }
+      40% { transform: scale(1); }
+    }
+
+    /* Toast Notifications */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--card);
+      padding: 16px 20px;
+      border-radius: 12px;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 280px;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast.error {
+      border-left: 4px solid var(--error);
+    }
+
+    .toast.success {
+      border-left: 4px solid var(--success);
+    }
+
+    /* Responsive */
+    @media (max-width: 968px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        position: static;
+      }
+    }
+
+    /* Markdown Styles */
+    .message-bubble strong {
+      font-weight: 600;
+    }
+
+    .message-bubble em {
+      font-style: italic;
+    }
+
+    .message-bubble code {
+      background: rgba(0,0,0,0.05);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+    }
+
+    .message.user .message-bubble code {
+      background: rgba(255,255,255,0.2);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo-section">
+        <div class="logo">GT</div>
+        <div class="logo-text">
+          <h1>GenTaxAI</h1>
+          <p>Your Tax Expert</p>
+        </div>
+      </div>
+
+      <div class="quick-examples">
+        <h3>Quick Examples</h3>
+        <button class="example-btn" data-q="What are the income tax slabs for AY 2024-25?">
+          <i class="fas fa-percent"></i>
+          <span>Income Tax Slabs</span>
+        </button>
+        <button class="example-btn" data-q="How to calculate GST for a small business?">
+          <i class="fas fa-calculator"></i>
+          <span>GST Calculation</span>
+        </button>
+        <button class="example-btn" data-q="What deductions under Section 80C?">
+          <i class="fas fa-receipt"></i>
+          <span>80C Deductions</span>
+        </button>
+        <button class="example-btn" data-q="ITR filing deadline for FY 2024-25?">
+          <i class="fas fa-calendar"></i>
+          <span>Filing Deadline</span>
+        </button>
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn" id="exportBtn">
+          <i class="fas fa-download"></i>
+          Export
+        </button>
+        <button class="btn btn-primary" id="newChatBtn">
+          <i class="fas fa-plus"></i>
+          New Chat
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Chat -->
+    <main class="chat-container">
+      <header class="chat-header">
+        <div>
+          <h2>Chat with GenTaxAI</h2>
+          <p style="color: var(--text-muted); font-size: 14px;">Ask anything about Indian taxes</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn" id="clearBtn">
+            <i class="fas fa-trash"></i>
+            Clear
+          </button>
+        </div>
+      </header>
+
+      <div class="messages-wrapper" id="messagesContainer">
+        <div class="welcome-card" id="welcomeCard">
+          <div class="icon">🤖</div>
+          <h3>Welcome to GenTaxAI</h3>
+          <p>I'm your AI-powered assistant for Indian tax law, GST, and financial regulations. Ask me anything!</p>
+          <div style="display: flex; gap: 12px; justify-content: center; margin-top: 24px;">
+            <button class="btn btn-primary example-btn" data-q="What are the income tax slabs for AY 2024-25?">
+              Get Started
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-area">
+        <div class="input-wrapper">
+          <div class="input-container">
+            <textarea 
+              id="messageInput" 
+              placeholder="Ask about taxes, GST, deductions, filing deadlines..."
+              maxlength="1200"
+            ></textarea>
+            <div class="char-count">
+              <span id="charCount">0</span>/1200
+            </div>
+          </div>
+          <button class="send-btn" id="sendBtn" disabled>
+            <i class="fas fa-paper-plane"></i>
+            Send
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast" id="toast">
+    <i class="fas fa-check-circle"></i>
+    <span id="toastMessage">Message</span>
+  </div>
+
+  <script>
+    const messageInput = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const messagesContainer = document.getElementById('messagesContainer');
+    const welcomeCard = document.getElementById('welcomeCard');
+    const charCount = document.getElementById('charCount');
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toastMessage');
+
+    let sessionId = 's_' + Date.now();
+    let messageHistory = [];
+
+    // Event Listeners
+    messageInput.addEventListener('input', handleInput);
+    sendBtn.addEventListener('click', sendMessage);
+    messageInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        if (!sendBtn.disabled) sendMessage();
+      }
+    });
+
+    document.querySelectorAll('.example-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const question = btn.dataset.q;
+        messageInput.value = question;
+        handleInput();
+        setTimeout(() => sendMessage(), 100);
+      });
+    });
+
+    document.getElementById('newChatBtn').addEventListener('click', startNewChat);
+    document.getElementById('clearBtn').addEventListener('click', clearChat);
+    document.getElementById('exportBtn').addEventListener('click', exportChat);
+
+    function handleInput() {
+      const len = messageInput.value.length;
+      charCount.textContent = len;
+      sendBtn.disabled = len === 0;
+      
+      // Auto-resize
+      messageInput.style.height = 'auto';
+      messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + 'px';
+    }
+
+    async function sendMessage() {
+      const text = messageInput.value.trim();
+      if (!text) return;
+
+      // Hide welcome card
+      if (welcomeCard) welcomeCard.style.display = 'none';
+
+      // Add user message
+      addMessage('user', text);
+      messageHistory.push({ role: 'user', content: text, time: new Date() });
+
+      // Clear input
+      messageInput.value = '';
+      handleInput();
+      sendBtn.disabled = true;
+
+      // Show loading
+      const loadingId = addLoadingMessage();
+
+      try {
+        const response = await fetch('/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: text, session_id: sessionId })
+        });
+
+        if (!response.ok) throw new Error(`Server error: ${response.status}`);
+
+        const data = await response.json();
+        const answer = data.answer || 'No response received.';
+
+        // Remove loading and add response
+        removeLoadingMessage(loadingId);
+        addMessage('assistant', answer);
+        messageHistory.push({ role: 'assistant', content: answer, time: new Date() });
+
+      } catch (error) {
+        removeLoadingMessage(loadingId);
+        showToast('Failed to get response: ' + error.message, 'error');
+      } finally {
+        sendBtn.disabled = false;
+        messageInput.focus();
+      }
+    }
+
+    function addMessage(role, content) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${role}`;
+      
+      const avatar = document.createElement('div');
+      avatar.className = 'message-avatar';
+      avatar.innerHTML = role === 'user' ? '<i class="fas fa-user"></i>' : '<i class="fas fa-robot"></i>';
+
+      const contentDiv = document.createElement('div');
+      contentDiv.className = 'message-content';
+
+      const bubble = document.createElement('div');
+      bubble.className = 'message-bubble';
+      bubble.innerHTML = formatMessage(content);
+
+      const time = document.createElement('div');
+      time.className = 'message-time';
+      time.textContent = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+      contentDiv.appendChild(bubble);
+      contentDiv.appendChild(time);
+      messageDiv.appendChild(avatar);
+      messageDiv.appendChild(contentDiv);
+
+      messagesContainer.appendChild(messageDiv);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    function addLoadingMessage() {
+      const id = 'loading_' + Date.now();
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'message assistant';
+      messageDiv.id = id;
+      
+      const avatar = document.createElement('div');
+      avatar.className = 'message-avatar';
+      avatar.innerHTML = '<i class="fas fa-robot"></i>';
+
+      const contentDiv = document.createElement('div');
+      contentDiv.className = 'message-content';
+
+      const bubble = document.createElement('div');
+      bubble.className = 'message-bubble';
+      bubble.innerHTML = '<div class="loading"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>';
+
+      contentDiv.appendChild(bubble);
+      messageDiv.appendChild(avatar);
+      messageDiv.appendChild(contentDiv);
+
+      messagesContainer.appendChild(messageDiv);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      return id;
+    }
+
+    function removeLoadingMessage(id) {
+      const element = document.getElementById(id);
+      if (element) element.remove();
+    }
+
+    function formatMessage(text) {
+      return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/`(.+?)`/g, '<code>$1</code>')
+        .replace(/\n/g, '<br>');
+    }
+
+    function startNewChat() {
+      sessionId = 's_' + Date.now();
+      messageHistory = [];
+      messagesContainer.innerHTML = '';
+      messagesContainer.appendChild(welcomeCard);
+      welcomeCard.style.display = 'block';
+      showToast('New chat started', 'success');
+    }
+
+    function clearChat() {
+      if (messageHistory.length === 0) {
+        showToast('No messages to clear', 'error');
+        return;
+      }
+      if (confirm('Clear all messages?')) {
+        startNewChat();
+      }
+    }
+
+    function exportChat() {
+      if (messageHistory.length === 0) {
+        showToast('No messages to export', 'error');
+        return;
+      }
+      const data = JSON.stringify({ sessionId, messages: messageHistory }, null, 2);
+      const blob = new Blob([data], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `gentaxai-${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Chat exported successfully', 'success');
+    }
+
+    function showToast(message, type = 'success') {
+      toastMessage.textContent = message;
+      toast.className = `toast ${type} show`;
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    // Initialize
+    messageInput.focus();
+  </script>
+</body>
+</html>
